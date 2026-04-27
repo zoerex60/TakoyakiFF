@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+
+  --color-brand-red: #840f16;
+  --color-brand-red-dark: #a52a2a;
+  --color-brand-red-light: #ffc0bb;
+  --color-brand-yellow: #fcd400;
+  --color-brand-yellow-light: #ffe16d;
+  --color-brand-green: #006639;
+  --color-creamy: #fefccf;
+  --color-creamy-light: #fefccf;
+  --color-creamy-dark: #f2f0c4;
+  --color-creamy-darker: #e6e5b9;
+
+  --radius-custom-xl: 1.5rem;
+  --radius-custom-2xl: 3rem;
+}
+
+@layer base {
+  body {
+    @apply bg-creamy text-zinc-900 font-sans antialiased selection:bg-brand-red selection:text-white;
+  }
+}
+
+.bento-card {
+  @apply bg-white rounded-custom-xl border border-creamy-darker shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md;
+}
+
+.btn-primary {
+  @apply bg-brand-red-dark text-white font-bold px-8 py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-200 hover:scale-95 active:scale-90 shadow-[0_8px_16px_rgba(165,42,42,0.2)];
+}
+
+.btn-secondary {
+  @apply border-2 border-brand-green text-brand-green font-bold px-8 py-4 rounded-full transition-all duration-200 hover:bg-brand-green hover:text-white;
+}
