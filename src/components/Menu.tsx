@@ -1,60 +1,75 @@
 import { motion } from "motion/react";
 import { Flame } from "lucide-react";
+import takoyakiMascot from "../assets/images/takoyaki-mascot.gif";
 
-// ── Data topping & menu ────────────────────────────────────────────────────
+import imgBakso from "../assets/images/bakso.png";
+import imgCrabstick from "../assets/images/crabstick.png";
+import imgKatsuobushi from "../assets/images/katsuobushi.png";
+import imgSausMayo from "../assets/images/sausmayo.png";
+import imgSosis from "../assets/images/sosis.png";
+import imgKeju from "../assets/images/keju.png";
+
 const ITEMS = [
   {
     id: 1,
-    name: "Takoyaki Original",
-    sub: "Gurita + saus khas",
-    emoji: "🐙",
+    name: "Bakso",
+    sub: "Gurih kenyal nikmat",
+    img: imgBakso,
     color: "#C0571A",
     bg: "#FFF3EC",
-    tag: "Andalan",
+    tag: "Topping",
     spicy: false,
   },
   {
     id: 2,
-    name: "Daun Bawang",
-    sub: "Topping segar",
-    emoji: "🌿",
-    color: "#3A7D44",
-    bg: "#EDF7EF",
+    name: "Crabstick",
+    sub: "Seafood lembut manis",
+    img: imgCrabstick,
+    color: "#D4472A",
+    bg: "#FFF1EE",
     tag: "Topping",
     spicy: false,
   },
   {
     id: 3,
+    name: "Katsuobushi",
+    sub: "Bonito tipis harum",
+    img: imgKatsuobushi,
+    color: "#8B6914",
+    bg: "#FFFBEC",
+    tag: "Topping",
+    spicy: false,
+  },
+  {
+    id: 4,
+    name: "Saus & Mayones",
+    sub: "Pedas creamy nendang",
+    img: imgSausMayo,
+    color: "#B91C1C",
+    bg: "#FFF0F0",
+    tag: "Condiment",
+    spicy: true,
+  },
+  {
+    id: 5,
     name: "Sosis",
     sub: "Potongan besar gurih",
-    emoji: "🥖",
+    img: imgSosis,
     color: "#B5451B",
     bg: "#FFF0EB",
     tag: "Topping",
     spicy: false,
   },
   {
-    id: 4,
-    name: "Saus nikmat",
-    sub: "Saus pedas",
-    emoji: "🌶️",
-    color: "#B91C1C",
-    bg: "#FFF0F0",
-    tag: "Pedas",
-    spicy: true,
-  },
-  {
-    id: 5,
-    name: "Mayones",
-    sub: "Creamy lembut",
-    emoji: "🧴",
-    color: "#A0882A",
-    bg: "#FFFBEC",
+    id: 6,
+    name: "Keju",
+    sub: "Lumer meleleh gurih",
+    img: imgKeju,
+    color: "#D4A017",
+    bg: "#FFFBEA",
     tag: "Topping",
     spicy: false,
   },
-
-
 ];
 
 // Duplikat untuk seamless loop
@@ -65,8 +80,8 @@ const TRACK_B = [...ITEMS].reverse().concat([...ITEMS].reverse(), [...ITEMS].rev
 function ItemCard({ item }: { item: typeof ITEMS[0] }) {
   return (
     <div
-      className="shrink-0 flex flex-col items-center justify-center gap-3 px-8 py-6 rounded-[2rem] mx-3 shadow-sm border border-black/5 select-none"
-      style={{ background: item.bg, minWidth: 180 }}
+      className="shrink-0 flex flex-col items-center justify-center gap-3 px-12 py-10 rounded-[2rem] mx-4 shadow-sm border border-black/5 select-none"
+      style={{ background: item.bg, minWidth: 240 }}
     >
       {/* Tag */}
       <span
@@ -77,14 +92,18 @@ function ItemCard({ item }: { item: typeof ITEMS[0] }) {
         {item.tag}
       </span>
 
-      {/* Emoji besar */}
-      <motion.span
-        className="text-5xl"
+      {/* Foto topping */}
+      <motion.div
         animate={{ rotate: [-4, 4, -4], y: [0, -4, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: item.id * 0.3 }}
       >
-        {item.emoji}
-      </motion.span>
+        <img
+          src={item.img}
+          alt={item.name}
+          className="w-24 h-24 object-contain drop-shadow-md"
+          draggable={false}
+        />
+      </motion.div>
 
       {/* Nama */}
       <div className="text-center">
@@ -108,7 +127,7 @@ function MarqueeRow({
   speed?: number;
 }) {
   // Estimasi lebar total track
-  const totalW = items.length * 216; // ~216px per kartu
+  const totalW = items.length * 280; // ~280px per kartu
 
   return (
     <div className="overflow-hidden w-full">
@@ -192,12 +211,12 @@ export default function Menu() {
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mb-14 text-center">
         <div className="flex items-center justify-center gap-4 mb-5">
-          <TakoBall size={44} delay={0} />
-          <TakoBall size={56} delay={0.4} />
-          <TakoBall size={44} delay={0.8} />
+          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="w-45 h-45 object-contain" />
+          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} className="w-60 h-60 object-contain" />
+          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} className="w-45 h-45 object-contain" />
         </div>
         <h2 className="font-display text-5xl md:text-6xl font-extrabold text-brand-red leading-tight">
-          Menu / Topping
+          Topping
         </h2>
         <p className="text-zinc-500 mt-3 text-base max-w-sm mx-auto">
           Semua bisa dikombinasikan sesukamu — minta langsung ke abangnya!
@@ -208,8 +227,8 @@ export default function Menu() {
       <div className="flex items-center justify-center gap-6 mb-10 flex-wrap px-4">
         {[
           { label: "Sosis", shape: "square", color: "#E8C47A" },
-          { label: "Daun Bawang", shape: "circle", color: "#6DB96E" },
-          { label: "Mayones", shape: "circle", color: "#EDEDDE" },
+          { label: "Crabstick", shape: "circle", color: "#E87A7A" },
+          { label: "Katsuobushi", shape: "circle", color: "#C8A870" },
         ].map((t) => (
           <span key={t.label} className="flex items-center gap-2 text-sm text-zinc-600 font-medium">
             <span
@@ -224,14 +243,9 @@ export default function Menu() {
         ))}
       </div>
 
-      {/* Marquee row 1 — kiri ke kanan */}
+      {/* Marquee row — kiri ke kanan */}
       <div className="mb-4">
         <MarqueeRow items={TRACK_A} direction={1} speed={40} />
-      </div>
-
-      {/* Marquee row 2 — kanan ke kiri, lebih cepat */}
-      <div>
-        <MarqueeRow items={TRACK_B} direction={-1} speed={30} />
       </div>
 
       {/* CTA */}

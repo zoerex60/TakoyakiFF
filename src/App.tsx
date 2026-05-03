@@ -9,8 +9,17 @@ import Menu from "./components/Menu";
 import Location from "./components/Location";
 import Footer from "./components/Footer";
 import BottomNav from "./components/BottomNav";
+import Admin from "./components/Admin";
+
+if (window.location.pathname === "/admin") {
+  document.title = "Admin · Takoyaki FF";
+}
 
 export default function App() {
+  if (window.location.pathname === "/admin") {
+    return <Admin />;
+  }
+
   return (
     <div className="min-h-screen">
       <Navbar />

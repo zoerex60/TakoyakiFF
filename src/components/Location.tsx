@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MapPin, Clock, Store, ExternalLink, X, Satellite } from "lucide-react";
 import { IMAGES } from "../constants";
+import streetViewImg from "../assets/images/street-view.jpeg";
 
 const MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d247.90196607719034!2d106.83371936995681!3d-6.206681001484099!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1777288119140!5m2!1sid!2sid";
@@ -225,7 +226,7 @@ export default function Location() {
                   transition={{ duration: 1.0, ease: "easeOut" }}
                 >
                   <img
-                    src={STREET_VIEW_IMG}
+                    src={streetViewImg}
                     alt="Gerobak Takoyaki FF"
                     className="w-full h-full object-cover"
                   />
