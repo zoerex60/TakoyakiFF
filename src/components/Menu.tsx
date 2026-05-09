@@ -72,17 +72,17 @@ const ITEMS = [
   },
 ];
 
-// Duplikat untuk seamless loop (3x agar loop dari 0 → -33.33% selalu seamless)
-const TRACK_A = [...ITEMS, ...ITEMS, ...ITEMS];
+// 2 salinan cukup — animasi 0 → -50% seamless karena titik reset identik secara visual
+const TRACK_A = [...ITEMS, ...ITEMS];
 
 // ── CSS keyframes injected once ────────────────────────────────────────────
 const MARQUEE_STYLES = `
   @keyframes marquee-ltr {
     0%   { transform: translateX(0); }
-    100% { transform: translateX(-33.3333%); }
+    100% { transform: translateX(-50%); }
   }
   @keyframes marquee-rtl {
-    0%   { transform: translateX(-33.3333%); }
+    0%   { transform: translateX(-50%); }
     100% { transform: translateX(0); }
   }
 `;

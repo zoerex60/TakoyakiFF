@@ -167,6 +167,14 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
     setTimeout(() => setStokSaved(false), 2000);
   };
 
+  const handleIncreaseStok = (jumlah: number) => {
+    if (stok === null) return;
+    const newVal = stok + jumlah;
+    set(ref(db, "gerobak/stok"), newVal);
+    setStokSaved(true);
+    setTimeout(() => setStokSaved(false), 2000);
+  };
+
   const handleSavePengumuman = () => {
     set(ref(db, "gerobak/pengumuman"), pengumumanInput || null);
     setPengumumanSaved(true);
@@ -255,6 +263,28 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
                 >
                   {stokSaved ? "✓" : "Set"}
                 </button>
+              </div>
+
+              {/* Quick tap buttons */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Cepat</p>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { label: "−10", action: () => handleDecreaseStok(10), style: "bg-red-900/60 text-red-300 hover:bg-red-800/70", disabled: stok === null || stok === 0 },
+                    { label: "−5",  action: () => handleDecreaseStok(5),  style: "bg-red-900/40 text-red-300 hover:bg-red-800/60", disabled: stok === null || stok === 0 },
+                    { label: "+5",  action: () => handleIncreaseStok(5),  style: "bg-green-900/40 text-green-300 hover:bg-green-800/60", disabled: stok === null },
+                    { label: "+10", action: () => handleIncreaseStok(10), style: "bg-green-900/60 text-green-300 hover:bg-green-800/70", disabled: stok === null },
+                  ].map(({ label, action, style, disabled }) => (
+                    <button
+                      key={label}
+                      onClick={action}
+                      disabled={disabled}
+                      className={`py-2.5 rounded-xl text-sm font-black transition-colors ${style} disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-2">
                 <input
