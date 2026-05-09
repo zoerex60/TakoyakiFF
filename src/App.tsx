@@ -16,10 +16,6 @@ if (window.location.pathname === "/admin") {
 }
 
 export default function App() {
-  if (window.location.pathname === "/admin") {
-    return <Admin />;
-  }
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -37,7 +33,6 @@ export default function App() {
       </main>
 
       <Footer />
-      <BottomNav />
     </div>
   );
 }

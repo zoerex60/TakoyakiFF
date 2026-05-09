@@ -112,6 +112,7 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
   const [stok, setStokState] = useState<number | null>(null);
   const [pengumumanInput, setPengumumanInput] = useState("");
   const [stokInput, setStokInput] = useState("");
+  const [stokKurangiInput, setStokKurangiInput] = useState("");
   const [stokSaved, setStokSaved] = useState(false);
   const [pengumumanSaved, setPengumumanSaved] = useState(false);
 
@@ -157,6 +158,15 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
     setTimeout(() => setStokSaved(false), 2000);
   };
 
+  const handleDecreaseStok = (jumlah: number) => {
+    if (stok === null) return;
+    const newVal = Math.max(0, stok - jumlah);
+    set(ref(db, "gerobak/stok"), newVal);
+    setStokKurangiInput("");
+    setStokSaved(true);
+    setTimeout(() => setStokSaved(false), 2000);
+  };
+
   const handleSavePengumuman = () => {
     set(ref(db, "gerobak/pengumuman"), pengumumanInput || null);
     setPengumumanSaved(true);
@@ -192,32 +202,33 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder="Password admin..."
               autoFocus
-              className="bg-zinc-800 text-white rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-red placeholder:text-zinc-600"
+              className={`bg-zinc-800 text-white text-sm rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-red placeholder:text-zinc-600 ${wrong ? "ring-2 ring-red-500" : ""}`}
             />
-            {wrong && <p className="text-red-400 text-xs px-1">Password salah.</p>}
-            <button onClick={handleLogin} className="bg-brand-red text-white font-bold py-3 rounded-xl text-sm hover:bg-red-700 transition-colors">
+            {wrong && <p className="text-red-400 text-xs">Password salah.</p>}
+            <button
+              onClick={handleLogin}
+              className="py-3 rounded-xl text-sm font-bold bg-brand-red text-white hover:opacity-90 transition-opacity"
+            >
               Masuk
             </button>
           </motion.div>
         ) : (
           <div className="flex flex-col gap-4">
-            {/* Status */}
+            {/* Override status */}
             <div className="bg-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
               <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Status Gerobak</p>
               <div className="flex gap-2">
-                {([
-                  { label: "Buka", val: "open" as const, cls: "bg-green-500 text-white" },
-                  { label: "Tutup", val: "closed" as const, cls: "bg-red-500 text-white" },
-                  { label: "Auto", val: null, cls: "bg-zinc-600 text-white" },
-                ] as const).map((btn) => (
+                {(["open", "closed", null] as const).map((v) => (
                   <button
-                    key={btn.label}
-                    onClick={() => set(ref(db, "gerobak/override"), btn.val)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors ${
-                      override === btn.val ? btn.cls : "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"
+                    key={String(v)}
+                    onClick={() => set(ref(db, "gerobak/override"), v)}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                      override === v
+                        ? v === "open" ? "bg-green-500 text-white" : v === "closed" ? "bg-red-500 text-white" : "bg-zinc-500 text-white"
+                        : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
                     }`}
                   >
-                    {btn.label}
+                    {v === "open" ? "Buka" : v === "closed" ? "Tutup" : "Otomatis"}
                   </button>
                 ))}
               </div>
@@ -226,40 +237,47 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
             {/* Stok */}
             <div className="bg-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
               <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider">
-                Sisa Stok {stok !== null && <span className="text-white ml-1">{stok} porsi</span>}
+                Stok {stok !== null ? `· ${stok} porsi` : "· belum diset"}
               </p>
               <div className="flex gap-2">
                 <input
                   type="number"
-                  min="0"
                   value={stokInput}
                   onChange={(e) => setStokInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && stokInput !== "" && handleSetStok(Number(stokInput))}
-                  placeholder="Jumlah..."
+                  placeholder="Set stok..."
                   className="flex-1 bg-zinc-700 text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-red placeholder:text-zinc-600"
                 />
                 <button
                   onClick={() => stokInput !== "" && handleSetStok(Number(stokInput))}
-                  className={`px-4 rounded-xl text-xs font-bold transition-colors ${stokSaved ? "bg-green-500 text-white" : "bg-brand-red text-white"}`}
+                  disabled={stokInput === ""}
+                  className={`px-4 rounded-xl text-xs font-bold transition-colors ${stokSaved ? "bg-green-500 text-white" : "bg-brand-red text-white hover:opacity-90"} disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   {stokSaved ? "✓" : "Set"}
                 </button>
-                <button onClick={() => handleSetStok(null)} className="px-3 rounded-xl text-xs font-bold bg-zinc-700 text-zinc-300 hover:bg-zinc-600">
-                  Clear
-                </button>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                {[5, 10, 15, 20, 30].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => handleSetStok(n)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                      stok === n ? "bg-brand-red text-white" : "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={stokKurangiInput}
+                  onChange={(e) => setStokKurangiInput(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    stokKurangiInput !== "" &&
+                    handleDecreaseStok(Number(stokKurangiInput))
+                  }
+                  placeholder="Kurangi sebanyak..."
+                  className="flex-1 bg-zinc-700 text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-zinc-600"
+                />
+                <button
+                  onClick={() =>
+                    stokKurangiInput !== "" && handleDecreaseStok(Number(stokKurangiInput))
+                  }
+                  disabled={stok === null || stok === 0 || stokKurangiInput === ""}
+                  className="px-4 rounded-xl text-xs font-bold transition-colors bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Kurangi
+                </button>
               </div>
             </div>
 
@@ -320,22 +338,22 @@ function StatusGerobak({ onOpenAdmin }: { onOpenAdmin: () => void }) {
   };
 
   return (
-    <div className="flex flex-col gap-3 w-max">
+    <div className="flex flex-col gap-3 w-max max-w-full">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 0.5 }}
         onClick={handleTap}
-        className="flex items-center gap-4 bg-white rounded-2xl px-5 py-4 shadow-md border border-black/5 select-none cursor-pointer"
+        className="flex items-center gap-3 md:gap-4 bg-white rounded-2xl px-4 md:px-5 py-3 md:py-4 shadow-md border border-black/5 select-none cursor-pointer"
       >
         {isOpen ? (
-          <CheckCircle2 size={28} className="text-green-500 shrink-0" />
+          <CheckCircle2 size={24} className="text-green-500 shrink-0" />
         ) : (
-          <XCircle size={28} className="text-zinc-400 shrink-0" />
+          <XCircle size={24} className="text-zinc-400 shrink-0" />
         )}
         <div>
           <div className="flex items-center gap-2">
-            <span className={`font-black text-lg leading-none ${isOpen ? "text-green-600" : "text-zinc-500"}`}>
+            <span className={`font-black text-base md:text-lg leading-none ${isOpen ? "text-green-600" : "text-zinc-500"}`}>
               {isOpen ? "Buka Sekarang" : isSenin && !override ? "Hari Libur" : "Sedang Tutup"}
             </span>
             {isOpen && (
@@ -375,13 +393,14 @@ export default function Hero() {
       <AnimatePresence>
         {showAdmin && <AdminOverlay onClose={() => setShowAdmin(false)} />}
       </AnimatePresence>
-      <section className="max-w-7xl mx-auto px-4 md:px-6 pt-12 pb-16 flex flex-col-reverse md:flex-row items-center gap-10">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-16 pb-16 flex flex-col-reverse md:flex-row items-center gap-8 md:gap-10">
+        {/* ── Text side ── */}
         <motion.div
           style={{ y: textY }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex-1 flex flex-col gap-6 relative z-10"
+          className="flex-1 flex flex-col gap-5 md:gap-6 relative z-10 w-full"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -397,7 +416,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="font-display text-5xl md:text-6xl font-extrabold text-brand-red leading-tight"
+            className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-brand-red leading-tight"
           >
             Takoyaki FF:<br />
             <span className="text-zinc-900">Rasa Otentik Tako di Pinggir Jalan</span>
@@ -407,7 +426,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-lg text-zinc-600 max-w-md"
+            className="text-base md:text-lg text-zinc-600 max-w-md"
           >
             Rasakan sensasi garing di luar, lumer di dalam. Dibuat langsung di tempat dengan resep terbaik dan potongan gurita super besar!
           </motion.p>
@@ -415,28 +434,30 @@ export default function Hero() {
           <StatusGerobak onOpenAdmin={() => setShowAdmin(true)} />
         </motion.div>
 
+        {/* ── Image side ── */}
         <motion.div
           style={{ y: imgY, opacity: imgOpacity }}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          className="flex-1 relative w-full aspect-square md:aspect-auto md:h-[550px]"
+          className="flex-1 relative w-full aspect-square md:aspect-auto md:h-[550px] mb-8 md:mb-0"
         >
           <motion.div
             animate={{ rotate: [3, 3.8, 3] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-brand-yellow/10 rounded-[3rem] scale-105"
+            className="absolute inset-0 bg-brand-yellow/10 rounded-[2rem] md:rounded-[3rem] scale-105"
           />
           <img
             src={takoyakiImg}
             alt="Sizzling Takoyaki"
-            className="w-full h-full object-cover rounded-[3rem] shadow-2xl relative z-10 border-4 border-white"
+            className="w-full h-full object-cover rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10 border-4 border-white"
           />
+          {/* Mascot badge — responsive size & position */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="absolute -bottom-8 -left-8 z-20 w-32 h-32 bg-white rounded-full p-2 shadow-lg border-2 border-brand-red/10"
+            className="absolute -bottom-4 -left-2 md:-bottom-8 md:-left-8 z-20 w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg border-2 border-brand-red/10"
           >
             <img
               src={mascotImg}

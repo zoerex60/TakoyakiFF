@@ -72,16 +72,27 @@ const ITEMS = [
   },
 ];
 
-// Duplikat untuk seamless loop
+// Duplikat untuk seamless loop (3x agar loop dari 0 → -33.33% selalu seamless)
 const TRACK_A = [...ITEMS, ...ITEMS, ...ITEMS];
-const TRACK_B = [...ITEMS].reverse().concat([...ITEMS].reverse(), [...ITEMS].reverse());
+
+// ── CSS keyframes injected once ────────────────────────────────────────────
+const MARQUEE_STYLES = `
+  @keyframes marquee-ltr {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-33.3333%); }
+  }
+  @keyframes marquee-rtl {
+    0%   { transform: translateX(-33.3333%); }
+    100% { transform: translateX(0); }
+  }
+`;
 
 // ── Satu kartu item ────────────────────────────────────────────────────────
 function ItemCard({ item }: { item: typeof ITEMS[0] }) {
   return (
     <div
-      className="shrink-0 flex flex-col items-center justify-center gap-3 px-12 py-10 rounded-[2rem] mx-4 shadow-sm border border-black/5 select-none"
-      style={{ background: item.bg, minWidth: 240 }}
+      className="shrink-0 flex flex-col items-center justify-center gap-3 px-8 md:px-12 py-8 md:py-10 rounded-[2rem] mx-3 md:mx-4 shadow-sm border border-black/5 select-none"
+      style={{ background: item.bg, minWidth: 200 }}
     >
       {/* Tag */}
       <span
@@ -100,14 +111,14 @@ function ItemCard({ item }: { item: typeof ITEMS[0] }) {
         <img
           src={item.img}
           alt={item.name}
-          className="w-24 h-24 object-contain drop-shadow-md"
+          className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-md"
           draggable={false}
         />
       </motion.div>
 
       {/* Nama */}
       <div className="text-center">
-        <p className="font-display font-bold text-zinc-900 text-base leading-tight">
+        <p className="font-display font-bold text-zinc-900 text-sm md:text-base leading-tight">
           {item.name}
         </p>
         <p className="text-zinc-400 text-xs mt-0.5">{item.sub}</p>
@@ -116,7 +127,7 @@ function ItemCard({ item }: { item: typeof ITEMS[0] }) {
   );
 }
 
-// ── Marquee row ────────────────────────────────────────────────────────────
+// ── Marquee row — smooth CSS animation ────────────────────────────────────
 function MarqueeRow({
   items,
   direction = 1,
@@ -126,25 +137,21 @@ function MarqueeRow({
   direction?: 1 | -1;
   speed?: number;
 }) {
-  // Estimasi lebar total track
-  const totalW = items.length * 280; // ~280px per kartu
+  const animName = direction === 1 ? "marquee-ltr" : "marquee-rtl";
 
   return (
     <div className="overflow-hidden w-full">
-      <motion.div
+      <div
         className="flex"
-        animate={{ x: direction === 1 ? [0, -totalW / 3] : [-totalW / 3, 0] }}
-        transition={{
-          duration: speed,
-          repeat: Infinity,
-          ease: "linear",
-          repeatType: "loop",
+        style={{
+          animation: `${animName} ${speed}s linear infinite`,
+          willChange: "transform",
         }}
       >
         {items.map((item, i) => (
           <ItemCard key={`${item.id}-${i}`} item={item} />
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -207,35 +214,60 @@ function TakoBall({ size = 40, delay = 0 }: { size?: number; delay?: number }) {
 // ── Main component ─────────────────────────────────────────────────────────
 export default function Menu() {
   return (
-    <section className="py-20 overflow-hidden">
+    <section className="py-16 md:py-20 overflow-hidden">
+      {/* Inject CSS keyframes */}
+      <style>{MARQUEE_STYLES}</style>
+
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-14 text-center">
-        <div className="flex items-center justify-center gap-4 mb-5">
-          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="w-45 h-45 object-contain" />
-          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} className="w-60 h-60 object-contain" />
-          <motion.img src={takoyakiMascot} alt="takoyaki" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} className="w-45 h-45 object-contain" />
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10 md:mb-14 text-center">
+        <div className="flex items-center justify-center gap-2 md:gap-4 mb-5">
+          <motion.img
+            src={takoyakiMascot}
+            alt="takoyaki"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0 }}
+            className="w-24 h-24 md:w-36 md:h-36 object-contain"
+          />
+          <motion.img
+            src={takoyakiMascot}
+            alt="takoyaki"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+            className="w-32 h-32 md:w-48 md:h-48 object-contain"
+          />
+          <motion.img
+            src={takoyakiMascot}
+            alt="takoyaki"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+            className="w-24 h-24 md:w-36 md:h-36 object-contain"
+          />
         </div>
-        <h2 className="font-display text-5xl md:text-6xl font-extrabold text-brand-red leading-tight">
+        <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-brand-red leading-tight">
           Topping
         </h2>
-        <p className="text-zinc-500 mt-3 text-base max-w-sm mx-auto">
+        <p className="text-zinc-500 mt-3 text-sm md:text-base max-w-sm mx-auto">
           Semua bisa dikombinasikan sesukamu — minta langsung ke abangnya!
         </p>
       </div>
 
       {/* Legend topping */}
-      <div className="flex items-center justify-center gap-6 mb-10 flex-wrap px-4">
+      <div className="flex items-center justify-center gap-3 md:gap-6 mb-10 flex-wrap px-4">
         {[
-          { label: "Sosis", shape: "square", color: "#E8C47A" },
-          { label: "Crabstick", shape: "circle", color: "#E87A7A" },
-          { label: "Katsuobushi", shape: "circle", color: "#C8A870" },
+          { label: "Sosis", shape: "circle", color: "#E8C47A" },
+          { label: "Crabstick", shape: "rectangle", color: "#E87A7A" },
+          { label: "Katsuobushi", shape: "rectangle", color: "#C8A870" },
+          { label: "Bakso", shape: "circle", color: "#838383" },
+          { label: "Saus", shape: "triangle", color: "#b00000" },
+          { label: "Mayones", shape: "triangle", color: "#fefefe" },
         ].map((t) => (
-          <span key={t.label} className="flex items-center gap-2 text-sm text-zinc-600 font-medium">
+          <span key={t.label} className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-zinc-600 font-medium">
             <span
-              className="inline-block w-3.5 h-3.5"
+              className="inline-block w-3 h-3 md:w-3.5 md:h-3.5"
               style={{
                 backgroundColor: t.color,
                 borderRadius: t.shape === "circle" ? "50%" : "3px",
+                border: t.color === "#fefefe" ? "1px solid #ddd" : undefined,
               }}
             />
             {t.label}
@@ -243,13 +275,13 @@ export default function Menu() {
         ))}
       </div>
 
-      {/* Marquee row — kiri ke kanan */}
+      {/* Marquee row — smooth CSS infinite scroll */}
       <div className="mb-4">
         <MarqueeRow items={TRACK_A} direction={1} speed={40} />
       </div>
 
       {/* CTA */}
-      <div className="text-center mt-14">
+      <div className="text-center mt-10 md:mt-14 px-4">
         <p className="text-zinc-400 text-sm">
           🔥 Semua takoyaki disajikan panas langsung dari panggangan
         </p>

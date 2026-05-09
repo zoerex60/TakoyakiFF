@@ -30,14 +30,14 @@ function AnnouncementBanner() {
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className="bg-brand-yellow overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center gap-3">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-2.5 flex items-center gap-3">
             <Megaphone size={15} className="shrink-0 text-zinc-800" />
-            <p className="text-sm font-semibold text-zinc-900 flex-1 leading-snug">
+            <p className="text-xs md:text-sm font-semibold text-zinc-900 flex-1 leading-snug">
               {text}
             </p>
             <button
               onClick={() => setDismissed(true)}
-              className="text-zinc-600 hover:text-zinc-900 transition-colors shrink-0"
+              className="text-zinc-600 hover:text-zinc-900 transition-colors shrink-0 p-1"
               aria-label="Tutup pengumuman"
             >
               <X size={15} />
@@ -55,14 +55,14 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 w-full z-50">
       <AnnouncementBanner />
       <div className="bg-[#FFFDF5]/80 backdrop-blur-md border-b-2 border-creamy-dark shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 md:h-16 flex justify-between items-center">
+          <div className="flex items-center gap-2 md:gap-3">
             <img
               src="/images/Takoyaki-FF-LOGO.png"
               alt="Takoyaki FF Logo"
-              className="w-15 h-15 rounded-full object-cover"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
             />
-            <span className="text-2xl font-black text-brand-red-dark tracking-tighter font-display">
+            <span className="text-xl md:text-2xl font-black text-brand-red-dark tracking-tighter font-display">
               Takoyaki FF
             </span>
           </div>
