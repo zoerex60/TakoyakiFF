@@ -28,25 +28,26 @@ function useGerobakData() {
   const day = now.getDay();
   const totalMinutes = now.getHours() * 60 + now.getMinutes();
   const second = now.getSeconds();
-  const isSenin = day === 1;
-  const isScheduleOpen = !isSenin && totalMinutes >= 16 * 60 && totalMinutes < 22 * 60;
+  const isLibur = day === 0 || day === 6;
+  const isScheduleOpen = !isLibur && totalMinutes >= 8 * 60 && totalMinutes < 16 * 60;
   const isOpen = override === "open" ? true : override === "closed" ? false : isScheduleOpen;
 
   let countdownLabel = "";
   let countdownSecs = 0;
 
   if (!override) {
-    if (isSenin) {
-      countdownSecs = ((24 * 60 - totalMinutes) + 16 * 60) * 60 - second;
-      countdownLabel = "Buka lagi Selasa";
-    } else if (!isScheduleOpen && totalMinutes < 16 * 60) {
-      countdownSecs = (16 * 60 - totalMinutes) * 60 - second;
+    if (isLibur) {
+      const daysToMonday = day === 0 ? 1 : 2;
+      countdownSecs = ((24 * 60 - totalMinutes) + (daysToMonday - 1) * 24 * 60 + 8 * 60) * 60 - second;
+      countdownLabel = "Buka lagi Senin";
+    } else if (!isScheduleOpen && totalMinutes < 8 * 60) {
+      countdownSecs = (8 * 60 - totalMinutes) * 60 - second;
       countdownLabel = "Buka dalam";
-    } else if (!isScheduleOpen && totalMinutes >= 22 * 60) {
-      countdownSecs = ((24 * 60 - totalMinutes) + 16 * 60) * 60 - second;
+    } else if (!isScheduleOpen && totalMinutes >= 16 * 60) {
+      countdownSecs = ((24 * 60 - totalMinutes) + 8 * 60) * 60 - second;
       countdownLabel = "Buka besok";
     } else {
-      countdownSecs = (22 * 60 - totalMinutes) * 60 - second;
+      countdownSecs = (16 * 60 - totalMinutes) * 60 - second;
       countdownLabel = "Tutup dalam";
     }
   }
@@ -59,7 +60,7 @@ function useGerobakData() {
       ? `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
       : "";
 
-  return { isOpen, isSenin, override, countdown, countdownLabel, stok };
+  return { isOpen, isLibur, override, countdown, countdownLabel, stok };
 }
 
 // ── Stok Badge ─────────────────────────────────────────────────────────────
@@ -80,7 +81,7 @@ function StokBadge({ stok }: { stok: number | null }) {
       }`}
     >
       <Package size={16} />
-      Sisa <span className="text-lg leading-none">{stok}</span> porsi
+      Sisa <span className="text-lg leading-none">{stok}</span> piece
       {isCritical && (
         <motion.span
           animate={{ opacity: [1, 0.3, 1] }}
@@ -245,7 +246,7 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
             {/* Stok */}
             <div className="bg-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
               <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider">
-                Stok {stok !== null ? `· ${stok} porsi` : "· belum diset"}
+                Stok {stok !== null ? `· ${stok} piece` : "· belum diset"}
               </p>
               <div className="flex gap-2">
                 <input
@@ -352,7 +353,7 @@ function AdminOverlay({ onClose }: { onClose: () => void }) {
 
 // ── Status widget ──────────────────────────────────────────────────────────
 function StatusGerobak({ onOpenAdmin }: { onOpenAdmin: () => void }) {
-  const { isOpen, isSenin, override, countdown, countdownLabel, stok } = useGerobakData();
+  const { isOpen, isLibur, override, countdown, countdownLabel, stok } = useGerobakData();
   const tapCount = useRef(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -384,7 +385,7 @@ function StatusGerobak({ onOpenAdmin }: { onOpenAdmin: () => void }) {
         <div>
           <div className="flex items-center gap-2">
             <span className={`font-black text-base md:text-lg leading-none ${isOpen ? "text-green-600" : "text-zinc-500"}`}>
-              {isOpen ? "Buka Sekarang" : isSenin && !override ? "Hari Libur" : "Sedang Tutup"}
+              {isOpen ? "Buka Sekarang" : isLibur && !override ? "Hari Libur" : "Sedang Tutup"}
             </span>
             {isOpen && (
               <motion.span

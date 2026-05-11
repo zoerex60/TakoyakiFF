@@ -150,8 +150,8 @@ export default function Location() {
               <div>
                 <h4 className="font-bold text-base md:text-lg">Jam Operasional</h4>
                 <p className="text-zinc-600 mt-1 text-sm md:text-base">
-                  Selasa – Minggu: 16.00 – 22.00<br />
-                  <span className="text-brand-red font-medium text-sm">Senin Libur</span>
+                  Senin – Jum'at: 08.00 – 16.00<br />
+                  <span className="text-brand-red font-medium text-sm">Sabtu & Minggu Libur</span>
                 </p>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function Location() {
                       <MapPin size={16} className="text-brand-red fill-brand-red" />
                       <span className="font-bold text-zinc-900">Takoyaki FF</span>
                     </div>
-                    <p className="text-zinc-500 text-sm">Jl. Halimun Raya · Buka 16.00–22.00</p>
+                    <p className="text-zinc-500 text-sm">Jl. Halimun Raya · Buka 08.00–16.00</p>
                     <a
                       href={GMAPS_LINK}
                       target="_blank"
