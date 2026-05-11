@@ -72,17 +72,17 @@ const ITEMS = [
   },
 ];
 
-// 2 salinan cukup — animasi 0 → -50% seamless karena titik reset identik secara visual
-const TRACK_A = [...ITEMS, ...ITEMS];
+// 3 salinan — animasi 0 → -33.33% agar titik reset selalu di luar viewport
+const TRACK_A = [...ITEMS, ...ITEMS, ...ITEMS];
 
 // ── CSS keyframes injected once ────────────────────────────────────────────
 const MARQUEE_STYLES = `
   @keyframes marquee-ltr {
     0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    100% { transform: translateX(-33.3333%); }
   }
   @keyframes marquee-rtl {
-    0%   { transform: translateX(-50%); }
+    0%   { transform: translateX(-33.3333%); }
     100% { transform: translateX(0); }
   }
 `;
@@ -91,8 +91,8 @@ const MARQUEE_STYLES = `
 function ItemCard({ item }: { item: typeof ITEMS[0] }) {
   return (
     <div
-      className="shrink-0 flex flex-col items-center justify-center gap-3 px-8 md:px-12 py-8 md:py-10 rounded-[2rem] mx-3 md:mx-4 shadow-sm border border-black/5 select-none"
-      style={{ background: item.bg, minWidth: 200 }}
+      className="shrink-0 flex flex-col items-center justify-center gap-2 md:gap-3 px-5 md:px-12 py-5 md:py-10 rounded-[1.5rem] md:rounded-[2rem] mx-2 md:mx-4 shadow-sm border border-black/5 select-none"
+      style={{ background: item.bg, minWidth: 148 }}
     >
       {/* Tag */}
       <span
@@ -111,7 +111,7 @@ function ItemCard({ item }: { item: typeof ITEMS[0] }) {
         <img
           src={item.img}
           alt={item.name}
-          className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-md"
+          className="w-14 h-14 md:w-24 md:h-24 object-contain drop-shadow-md"
           draggable={false}
         />
       </motion.div>
